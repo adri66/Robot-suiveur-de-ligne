@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 #include "lib/LCD.h"
 
 
@@ -147,4 +148,26 @@ uint16_t analog_read(uint8_t chanelle, uint16_t old_value)
 		return ADC;
 	else
 		return old_value;
+}
+bool pwm_timer1(int duty_cicle, int arduino_pin)
+{
+	volatile uint8_t * compare_register = 0x00;
+	switch(arduino_pin)
+	{
+		case 5:
+			OCR0B = (duty_cicle*255)/100;
+			DDRD |= _BV(PIND5);
+			TCCR0A |= (_BV(COM0B1)|_BV(COM0B0));
+			break;
+		case 6:
+			OCR0A = (duty_cicle*255)/100;
+			DDRD |= _BV(PINC6);
+			TCCR0A |= (_BV(COM0A1|_BV(COM0A0)));
+			break;
+		default:
+			return false;
+	}
+	TCCR0A |= (_BV(WGM00)|_BV(WGM01)); //Fast PWM mode
+	TCCR0B &= ~_BV(WGM02);
+	TCCR0B = (TCCR0B&~(_BV(CS01)|_BV(CS02)))|_BV(CS00); //Fpwm = 62.5Khz
 }
