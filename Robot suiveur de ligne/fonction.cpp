@@ -87,23 +87,18 @@ void setup()
 				lcd.print_number((va_old/10.24));
 			}
 			lcd.set_cursor(15,2);
+			//Clignotement pour montrer que le soft n'est pas planté
 			if(b<=50)
 				lcd.send_leter('#');
 			else if(b<100)
 			{
 				if(b==51)
-				lcd.clear();
+					lcd.clear();
 			}
 			else
 				b = 0;
 		}
-		e_write(adresse_eeprom, va_old/10.24);
-		lcd.set_cursor(0,2);
-		sprintf(c, "%d - ", (int)va_old/10.24);
-		lcd.print_text(c);
-		sprintf(c, "%d - ",e_read(adresse_eeprom));
-		lcd.print_text(c);
-		_delay_ms(2000);
+		e_write(adresse_eeprom, va_old/10.24); //inscrit la valeur en % dans l'eeprom
 		while ((PINC&(1<<BP_PIN)))_delay_ms(1);
 	}
 	lcd.clear();

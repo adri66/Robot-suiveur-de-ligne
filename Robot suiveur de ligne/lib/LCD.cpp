@@ -26,7 +26,7 @@
 ************************************************************************************************************
 */
 
-#define adresse_PCF 0x40
+//#define adresse_PCF 0x40
 #define F_CPU 16000000UL
 
 #define RS 0x01<<6
@@ -68,7 +68,7 @@ uint8_t PCF8574::send(uint8_t data, bool read)
 	;
 		
 	//DS1307 adresse write
-	TWDR = adresse_PCF|read	;			//Inscrit l'adresse, Mode
+	TWDR = adresse|read	;			//Inscrit l'adresse, Mode
 	TWCR = (1<<TWEN)|(1<<TWINT);							//Envoi l'adresse
 	while(!(TWCR&(1<<TWINT)))								//Attente de l'envoi
 	;
@@ -98,7 +98,6 @@ bool LCD::check_busy_flag()
 {
 	pcf.send(RW, 0);
 	uint8_t bf = pcf.send(RW, 1)&D7;
-	//_delay_ms(10000);
 	if((bf&(D7)>>3))
 		return true;
 	else
@@ -111,7 +110,6 @@ void LCD::send(uint8_t data, bool debut_instuction)
 	pcf.send(0x00, 0);	//Met les pins à0
 	pcf.send(data, 0);	//Ecris les données
 	data |= (E);
-	//_delay_ms(1000);
 	pcf.send(data, 0);	//Confirme les données
 	_delay_us(1);						//Attente que la confiramation soit bien reçue
 	data &= ~(E);
@@ -121,9 +119,7 @@ void LCD::send(uint8_t data, bool debut_instuction)
 void LCD::display_init()
 {
 	send(0x03, true); //Mode 4bit
-			
 	send(0x08, false); //Mode 2ligne
-			
 	send(0x00, true);send(0x01, false); //Clear display
 	send(0x00, true);send(0x02, false); //Return home
 	send(0x00, true);send((D2|D1), false); //Incrémentation de la RAM et déplacement du curseur vers la droite
@@ -139,8 +135,7 @@ void LCD::send_leter(uint8_t lettre)
 }
 void LCD::clear()
 {
-	send(0x00, true); send(D0, false); //Clear Display
-	send(0x00, true);send(0x02, false); //Return home
+	send(0x00, true);send(0x01, false); //Clear display
 }
 void LCD::set_cursor(int x, int y)
 {
